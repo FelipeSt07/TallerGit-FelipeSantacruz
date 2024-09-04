@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Traductor de Números a Letras</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #a6e4ff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
+        }
+        h1 {
+            margin-top: 0;
+            font-size: 24px;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        input[type="number"] {
+            width: 95%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            margin-top: 10px;
+            padding: 10px 15px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Traductor de Números a Letras</h1>
+        <label for="numero">Ingrese un número:</label>
+        <input type="number" id="numero" placeholder="Por ejemplo, 123" />
+        <button onclick="convertirNumero()">Convertir</button>
+        <div id="resultado" class="result"></div>
+    </div>
+
+    <script>
+        function numeroALetras(numero) {
+            const unidades = ['CERO', 'UNO', 'DOS', 'TRES', 'CUATRO', 'CINCO', 'SEIS', 'SIETE', 'OCHO', 'NUEVE'];
+            const especiales = ['ONCE', 'DOCE', 'TRECE', 'CATORCE', 'QUINCE', 'DIECISÉIS', 'DIECISIETE', 'DIECIOCHO', 'DIECINUEVE'];
+            const decenas = ['DIEZ', 'VEINTE', 'TREINTA', 'CUARENTA', 'CINCUENTA', 'SESENTA', 'SETENTA', 'OCHENTA', 'NOVENTA'];
+            const centenas = ['CIEN', 'DOSCIENTOS', 'TRESCIENTOS', 'CUATROCIENTOS', 'QUINIENTOS', 'SEISCIENTOS', 'SETECIENTOS', 'OCHOCIENTOS', 'NOVECIENTOS'];
+
+            if (numero === 0) return 'CERO';
+
+            function convertirGrupo(n) {
+                let resultado = '';
+                if (n >= 100) {
+                    const centena = Math.floor(n / 100);
+                    if (centena === 1 && n % 100 === 0) return 'CIEN';
+                    resultado += centenas[centena - 1] + ' ';
+                    n = n % 100;
+                }
+                if (n >= 20) {
+                    const decena = Math.floor(n / 10);
+                    resultado += decenas[decena - 1] + (n % 10 !== 0 ? ' Y ' : '');
+                    n = n % 10;
+                } else if (n >= 11) {
+                    resultado += especiales[n - 11] + ' ';
+                    n = 0;
+                } else if (n === 10) {
+                    resultado += 'DIEZ ';
+                    n = 0;
+                }
+                if (n > 0) {
+                    resultado += unidades[n] + ' ';
+                }
+                return resultado.trim();
+            }
+
+            function convertir(numero) {
+                if (numero === 0) return 'CERO';
+
+                let resultado = '';
+                const millones = Math.floor(numero / 1000000);
+                if (millones > 0) {
+                    resultado += convertirGrupo(millones) + ' MILLÓN' + (millones > 1 ? 'ES' : '') + ' ';
+                    numero %= 1000000;
+                }
+                const miles = Math.floor(numero / 1000);
+                if (miles > 0) {
+                    if (miles === 1) {
+                        resultado += 'MIL ';
+                    } else {
+                        resultado += convertirGrupo(miles) + ' MIL ';
+                    }
+                    numero %= 1000;
+                }
+                if (numero > 0) {
+                    resultado += convertirGrupo(numero);
+                }
+
+                return resultado.trim();
+            }
+
+            return convertir(numero);
+        }
+
+        function convertirNumero() {
+            const numeroInput = document.getElementById('numero').value;
+            const numero = parseInt(numeroInput);
+
+            if (isNaN(numero)) {
+                document.getElementById('resultado').innerText = "Por favor, ingrese un número válido.";
+                return;
+            }
+
+            if (numero < 0) {
+                document.getElementById('resultado').innerText = "Por favor, ingrese un número positivo.";
+                return;
+            }
+
+            if (numero > 999999999) {
+                document.getElementById('resultado').innerText = "El número es demasiado grande. Ingrese un número menor o igual a 999,999,999.";
+                return;
+            }
+
+            const resultado = numeroALetras(numero);
+            document.getElementById('resultado').innerText = `El número ${numero} en letras es: ${resultado}`;
+        }
+    </script>
+</body>
+</html>
